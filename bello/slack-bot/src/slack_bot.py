@@ -48,7 +48,6 @@ class SlackBot(object):
             if split_command[:2] == ['list', 'tasks']:
                 response = requests.get(url).json()
 
-                text = 'Here are your tasks for today:'
                 attachments = []
                 for task in response:
                     new_attachment = {
@@ -57,6 +56,11 @@ class SlackBot(object):
                         'attachment_type': 'default'
                     }
                     attachments.append(new_attachment)
+
+                if attachments:
+                    text = 'Here are your tasks for today:'
+                else:
+                    text = 'No tasks for today :information_desk_person:'
             elif split_command[:2] == ['add', 'task']:
                 task_name = ' '.join(split_command[2:])
                 response = requests.post(url, json={'name': task_name})
