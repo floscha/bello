@@ -46,10 +46,10 @@ class SlackBot(object):
         try:
             split_command = command.split()
             if split_command[:2] == ['list', 'tasks']:
-                response = requests.get(url).json()
+                tasks = requests.get(url).json()
 
                 attachments = []
-                for task in response:
+                for task in tasks:
                     new_attachment = {
                         'text': task['name'],
                         'color': '#2ecc71' if task['done'] else '#95a5a6',
@@ -59,6 +59,14 @@ class SlackBot(object):
 
                 if attachments:
                     text = 'Here are your tasks for today:'
+                    tasks_done = len([t for t in tasks if t['done']])
+                    attachments.insert(0, {
+                        'text': ':white_check_mark: %d/%d'
+                        % (tasks_done, len(tasks)),
+                        'color': '#2ecc71' if tasks_done == len(tasks)
+                        else '#95a5a6',
+                        'attachment_type': 'default'
+                    })
                 else:
                     text = 'No tasks for today :information_desk_person:'
             elif split_command[:2] == ['add', 'task']:
