@@ -34,18 +34,31 @@ class TrelloFascade(object):
         day_name = calendar.day_name[weekday_number - 1]
         return day_name
 
+    def _create_clean_board(self, name):
+        created_board = self.trello.add_board(name)
+
+        # Clean up lists Trello creates by default.
+        for l in created_board.all_lists():
+            l.close()
+
+        return created_board
+
     def _find_boards_by_name(self, name):
         """Find all boards with the given name."""
         boards = self.trello.list_boards()
         res = [b for b in boards if b.name == name]
         return res
 
-    def _find_board_by_name(self, name):
+    def _find_board_by_name(self, name, create=False):
         """Find a single board with the given name."""
         candidates = self._find_boards_by_name(name)
 
         if len(candidates) == 0:
-            raise Exception("No board '%s' found" % name)
+            if create:
+                created_board = self._create_clean_board(name)
+                return created_board
+            else:
+                raise Exception("No board '%s' found" % name)
         elif len(candidates) > 1:
             raise Exception("Multiple boards '%s' found" % name)
         else:  # Excactly one list found.
@@ -57,15 +70,23 @@ class TrelloFascade(object):
         res = [l for l in lists if l.name == name]
         return res
 
-    def _find_list_by_name(self, board, name):
+    def _find_list_by_name(self, board, name, create=False):
         """Find a single list with the given name."""
         candidates = self._find_lists_by_name(board, name)
 
         if len(candidates) == 0:
-            raise Exception("No list '%s' in board '%s' found" % (name, board))
+            if create:
+                created_list = board.add_list(name)
+                for day in calendar.day_name:
+                    created_card = created_list.add_card(day)
+                    created_card.add_checklist(title='Tasks', items=[])
+                return created_list
+            else:
+                raise Exception("No list '%s' in board '%s' found"
+                                % (name, board))
         elif len(candidates) > 1:
-            raise Exception("Multiple lists '%s' in board '%s' found" %
-                            (name, board))
+            raise Exception("Multiple lists '%s' in board '%s' found"
+                            % (name, board))
         else:  # Excactly one list found.
             return candidates[0]
 
@@ -82,16 +103,16 @@ class TrelloFascade(object):
         if len(candidates) == 0:
             raise Exception("No card '%s' in list '%s' found" % (name, list_))
         elif len(candidates) > 1:
-            raise Exception("Multiple cards '%s' in list '%s' found" %
-                            (name, list_))
+            raise Exception("Multiple cards '%s' in list '%s' found"
+                            % (name, list_))
         else:  # Excactly one card found.
             return candidates[0]
 
     def _get_checklist(self, year, week, day):
         board_name = 'Bullet Journal %d' % year
-        board = self._find_board_by_name(board_name)
+        board = self._find_board_by_name(board_name, create=True)
         list_name = str(week)
-        list_ = self._find_list_by_name(board, list_name)
+        list_ = self._find_list_by_name(board, list_name, create=True)
         card_name = self._day_name_from_int(day)
         card = self._find_card_by_name(list_, card_name)
 
