@@ -50,10 +50,12 @@ class SlackBot(object):
 
                 attachments = []
                 for task in tasks:
+                    text = '~%s~' % task['name'].strip() if task['done'] \
+                        else task['name'].strip()
                     new_attachment = {
-                        'text': task['name'],
-                        'color': '#2ecc71' if task['done'] else '#95a5a6',
-                        'attachment_type': 'default'
+                        'text': text,
+                        'mrkdwn_in': ['text'],
+                        'color': '#2ecc71' if task['done'] else None
                     }
                     attachments.append(new_attachment)
 
