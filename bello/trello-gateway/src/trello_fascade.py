@@ -1,4 +1,5 @@
 import calendar
+from datetime import datetime
 import os
 
 from trello import TrelloClient
@@ -70,16 +71,23 @@ class TrelloFascade(object):
         res = [l for l in lists if l.name == name]
         return res
 
+    def _create_list_for_week(self, board, list_name):
+        """Create a Trello list for a week and all its days."""
+        created_list = board.add_list(list_name)
+
+        # Create first card for general stuff.
+        created_card = created_list.add_card('General')
+        for day in calendar.day_name:
+            created_card = created_list.add_card(day)
+            created_card.add_checklist(title='Tasks', items=[])
+
     def _find_list_by_name(self, board, name, create=False):
         """Find a single list with the given name."""
         candidates = self._find_lists_by_name(board, name)
 
         if len(candidates) == 0:
             if create:
-                created_list = board.add_list(name)
-                for day in calendar.day_name:
-                    created_card = created_list.add_card(day)
-                    created_card.add_checklist(title='Tasks', items=[])
+                created_list = self._create_list_for_week(board, name)
                 return created_list
             else:
                 raise Exception("No list '%s' in board '%s' found"
@@ -108,11 +116,30 @@ class TrelloFascade(object):
         else:  # Excactly one card found.
             return candidates[0]
 
+    def _get_week_list_string(self, year, week, day):
+        year_and_week = '%d-%d' % (year, week)
+        week_start_date = datetime.strptime(year_and_week + '-1', '%Y-%W-%u')
+        week_start_date_string = datetime.strftime(
+            week_start_date,
+            '%d. %b'
+        )
+        week_end_date = datetime.strptime(year_and_week + '-7', '%Y-%W-%u')
+        week_end_date_string = datetime.strftime(
+            week_end_date,
+            '%d. %b'
+        )
+        list_name = 'Week %d (%s - %s)' % (week,
+                                           week_start_date_string,
+                                           week_end_date_string)
+        return list_name
+
     def _get_checklist(self, year, week, day):
         board_name = 'Bullet Journal %d' % year
         board = self._find_board_by_name(board_name, create=True)
-        list_name = str(week)
+
+        list_name = self._get_week_list_string(year, week, day)
         list_ = self._find_list_by_name(board, list_name, create=True)
+
         card_name = self._day_name_from_int(day)
         card = self._find_card_by_name(list_, card_name)
 
