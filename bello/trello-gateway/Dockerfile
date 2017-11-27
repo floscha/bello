@@ -1,4 +1,4 @@
-FROM python:2.7-alpine
+FROM python:3.6-alpine
 
 # Build Trello client from source since pypi repo is outdated.
 RUN apk add --update git \
