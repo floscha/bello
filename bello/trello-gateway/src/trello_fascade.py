@@ -150,14 +150,21 @@ class TrelloFascade(object):
 
         return checklist
 
-    def get_tasks(self, year, week, day):
-        """Get a list of tasks for the current day."""
-        checklist = self._get_checklist(year, week, day)
+    def _get_tasks_from_checklist(self, checklist):
+        """Turn a Trello checklist into a list of task dictionaries."""
         checklist_items = checklist.items
 
         tasks = [{'name': ci['name'],
                   'done': ci['checked']}
                  for ci in checklist_items]
+
+        return tasks
+
+    def get_tasks(self, year, week, day):
+        """Get a list of tasks for the current day."""
+        checklist = self._get_checklist(year, week, day)
+
+        tasks = self._get_tasks_from_checklist(checklist)
 
         return tasks
 
@@ -203,3 +210,20 @@ class TrelloFascade(object):
                         'done': checklist_item_to_delete['checked']}
 
         return deleted_task
+
+    def get_week(self, year, week):
+        """Get the respective Trello list for a certain week."""
+        list_name = self._get_week_list_string(year, week, day)
+        try:
+            list_ = self._find_list_by_name(board, list_name)
+            cards = list_.list_cards()
+            checklists = [c.checklists[0] for c in cards]
+            tasks = [self._get_tasks_from_checklist(c) for c in checklists]
+
+    def create_week(self, year, week):
+        """Create a new Trello list for a week."""
+        raise NotImplementedError()
+
+    def delete_week(self, year, week):
+        """Delete the respective Trello list for a certain week."""
+        raise NotImplementedError()
