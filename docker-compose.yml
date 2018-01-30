@@ -5,8 +5,3 @@ services:
     ports:
       - "5000:5000"
     env_file: bello/trello-gateway/trello.env
-  slack-bot:
-    build: bello/slack-bot
-    env_file: bello/slack-bot/slack.env
-    environment:
-      - PYTHONUNBUFFERED=0
