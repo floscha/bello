@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 
 from resources.tasks import Tasks
-from resources.tasks import Weeks
+from resources.weeks import Weeks
 
 
 app = Flask(__name__)
