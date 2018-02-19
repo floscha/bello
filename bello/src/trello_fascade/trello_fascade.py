@@ -81,6 +81,8 @@ class TrelloFascade(object):
             created_card = created_list.add_card(day)
             created_card.add_checklist(title='Tasks', items=[])
 
+        return created_list
+
     def _find_list_by_name(self, board, name, create=False):
         """Find a single list with the given name."""
         candidates = self._find_lists_by_name(board, name)
