@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 
-from trello_fascade import TrelloFascade
+from trello_facade import TrelloFascade
 
 
 class Weeks(Resource):

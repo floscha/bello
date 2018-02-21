@@ -1,11 +1,11 @@
-from trello_fascade import TrelloFascade
+from trello_facade import TrelloFacade
 
 
 class Bello(object):
     """CRUD endpoint for tasks."""
 
     def __init__(self):
-        self.trello = TrelloFascade()
+        self.trello = TrelloFacade()
 
     def get_tasks(self, year, week, day):
         """Get all tasks."""

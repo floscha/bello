@@ -5,7 +5,7 @@ import os
 from trello import TrelloClient
 
 
-class TrelloFascade(object):
+class TrelloFacade(object):
     """A simple fascade for communicating with the Trello API."""
 
     def __init__(self):
