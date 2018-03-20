@@ -9,7 +9,7 @@ class TrelloFacade(object):
     """A simple fascade for communicating with the Trello API."""
 
     def __init__(self):
-        """Initialize a new TrelloFascade instance."""
+        """Initialize a new TrelloFacade instance."""
         self.trello = self._init_trello_client()
 
     def _init_trello_client(self):
@@ -118,7 +118,7 @@ class TrelloFacade(object):
         else:  # Excactly one card found.
             return candidates[0]
 
-    def _get_week_list_string(self, year, week, day):
+    def _get_week_list_string(self, year, week):
         year_and_week = '%d-%d' % (year, week)
         week_start_date = datetime.strptime(year_and_week + '-1', '%Y-%W-%u')
         week_start_date_string = datetime.strftime(
@@ -213,14 +213,17 @@ class TrelloFacade(object):
 
         return deleted_task
 
-    # def get_week(self, year, week):
-    #     """Get the respective Trello list for a certain week."""
-    #     list_name = self._get_week_list_string(year, week, day)
-    #     try:
-    #         list_ = self._find_list_by_name(board, list_name)
-    #         cards = list_.list_cards()
-    #         checklists = [c.checklists[0] for c in cards]
-    #         tasks = [self._get_tasks_from_checklist(c) for c in checklists]
+    def get_week(self, year, week):
+        """Get the respective Trello list for a certain week."""
+        board = self._find_board_by_name(str(year))
+        list_name = self._get_week_list_string(year, week)
+
+        list_ = self._find_list_by_name(board, list_name)
+        cards = list_.list_cards()
+        checklists = [c.checklists[0] for c in cards]
+        tasks = [self._get_tasks_from_checklist(c) for c in checklists]
+
+        return tasks
 
     def create_week(self, year, week):
         """Create a new Trello list for a week."""

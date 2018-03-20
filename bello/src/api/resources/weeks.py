@@ -1,14 +1,14 @@
 from flask import request
 from flask_restful import Resource
 
-from trello_facade import TrelloFascade
+from trello_facade import TrelloFacade
 
 
 class Weeks(Resource):
     """CR(U)D endpoint for weeks."""
 
     def __init__(self):
-        self.trello = TrelloFascade()
+        self.trello = TrelloFacade()
 
     def get(self, year, week):
         """Get a single week."""
