@@ -18,4 +18,5 @@ ADD src /app/src
 
 EXPOSE 5000
 
-CMD ["python", "src/run.py"]
+ENTRYPOINT ["python", "src/run.py"]
+CMD []
