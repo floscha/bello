@@ -139,7 +139,7 @@ class TrelloFacade(object):
         board_name = 'Bullet Journal %d' % year
         board = self._find_board_by_name(board_name, create=True)
 
-        list_name = self._get_week_list_string(year, week, day)
+        list_name = self._get_week_list_string(year, week)
         list_ = self._find_list_by_name(board, list_name, create=True)
 
         card_name = self._day_name_from_int(day)
